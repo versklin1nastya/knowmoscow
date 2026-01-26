@@ -39,19 +39,6 @@
             position: relative;
         }
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #bb00c2, #ff4ff6, #bb00c2);
-            border-radius: 22px;
-            z-index: -1;
-            animation: glow 3s ease-in-out infinite;
-            opacity: 0.5;
-        }
 
         h1 {
             text-align: center;
@@ -265,7 +252,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>📊 Результаты тестов</h1>
+        <h1>Результаты тестов</h1>
 
         {% if results %}
             <div class="stats-summary">
@@ -280,8 +267,8 @@
             <table class="results-table">
                 <thead>
                     <tr>
-                        <th>👤 Участник</th>
-                        <th style="text-align: center;">🎯 Результат</th>
+                        <th>Участник</th>
+                        <th style="text-align: center;">Результат</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -307,7 +294,7 @@
         {% endif %}
 
         <a href="{{ url_for('group_page', group_id=group_id) }}" class="back-button">
-            ← Вернуться к группе
+            Отмена
         </a>
     </div>
 

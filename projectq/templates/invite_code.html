@@ -37,19 +37,6 @@
             position: relative;
         }
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #bb00c2, #ff4ff6, #bb00c2);
-            border-radius: 22px;
-            z-index: -1;
-            animation: glow 3s ease-in-out infinite;
-            opacity: 0.5;
-        }
 
         h1 {
             font-size: clamp(1.6rem, 4vw, 2.2rem);
@@ -217,7 +204,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🔗 Код приглашения</h1>
+        <h1>Код приглашения</h1>
 
         <div class="info-card">
             <div class="info-item">
@@ -229,7 +216,7 @@
                 <div class="label">Код приглашения:</div>
                 <div class="code" id="invite-code">{{ invite_code }}</div>
                 <button class="copy-button" onclick="copyToClipboard('{{ invite_code }}')">
-                    📋 Копировать код
+                    Копировать код
                 </button>
             </div>
 
@@ -239,11 +226,10 @@
                     {{ invite_link }}
                 </a>
                 <button class="copy-button" onclick="copyToClipboard('{{ invite_link }}')">
-                    📋 Копировать ссылку
+                    Копировать ссылку
                 </button>
             </div>
 
-            <!-- QR-код -->
             <div class="info-item">
                 <div class="label">Сканируйте QR-код:</div>
                 <div class="qr-placeholder">
@@ -258,7 +244,7 @@
         </div>
 
         <a href="{{ url_for('group_page', group_id=group_id) }}" class="back-button">
-            ← Вернуться к группе
+            Отмена
         </a>
     </div>
 
@@ -267,7 +253,7 @@
             navigator.clipboard.writeText(text).then(function() {
                 const button = event.target;
                 const originalText = button.textContent;
-                button.textContent = '✅ Скопировано!';
+                button.textContent = 'Скопировано!';
                 button.style.background = 'linear-gradient(135deg, #4cd964, #2ecc71)';
 
                 setTimeout(() => {
