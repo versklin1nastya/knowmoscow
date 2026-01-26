@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <style>
+        body {
+            background-color: #170213;
+            color: hsl(0, 0%, 100%);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            color: #bb00c2;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            text-shadow: 0 2px 4px rgba(187, 0, 194, 0.4);
+        }
+
+        h3 {
+            color: #ff4ff6;
+            font-size: 1.5rem;
+            margin: 30px 0 15px 0;
+        }
+
+        form {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #24081f;
+            padding: 40px;
+            border-radius: 15px;
+            border: 3px solid #bb00c2;
+            box-shadow: 0 4px 20px rgba(187, 0, 194, 0.4);
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #333333;
+            border-radius: 8px;
+            border: 1px solid #bb00c2;
+            transition: all 0.3s ease;
+        }
+
+        li:hover {
+            background-color: #3a3a3a;
+            transform: translateX(5px);
+        }
+
+        input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+            accent-color: #bb00c2;
+        }
+
+        button {
+            background-color: #bb00c2;
+            color: hsl(0, 0%, 100%);
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 20px 10px;
+        }
+
+        button:hover {
+            background-color: #ff4ff6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(187, 0, 194, 0.4);
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        /* Стили для модального окна */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-content {
+            background-color: #24081f;
+            margin: 10% auto;
+            padding: 30px;
+            border: 3px solid #bb00c2;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 500px;
+            box-shadow: 0 4px 30px rgba(187, 0, 194, 0.6);
+            position: relative;
+        }
+
+        .close {
+            color: #ff4ff6;
+            float: right;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close:hover {
+            color: #bb00c2;
+            transform: scale(1.1);
+        }
+
+        #modal-results {
+            color: #e0e0e0;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* Дополнительные стили для улучшения читаемости */
+        label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+        }
+
+        form ul li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ title }}</h1>
+    <form method="POST">
+        <input type="hidden" name="test_id" value="{{ test_id }}">
+        {% for question in questions %}
+            <h3>{{ question.question }}</h3>
+            <ul>
+                {% for answer in question.answers %}
+                    <li>
+                        <label>
+                            <input type="radio" name="{{ question.question }}" value="{{ answer[0] }}" required>
+                            <span>{{ answer[1:] }}</span>
+                        </label>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+        <div class="buttons-container">
+            <button type="submit">Проверить</button>
+            <button type="button" onclick="location.href='/'">Обратно</button>
+        </div>
+    </form>
+
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modal-results"></div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const form = this;
+            fetch(form.action, {
+                method: form.method,
+                body: new FormData(form)
+            }).then(response => response.text())
+              .then(html => {
+                document.getElementById('modal-results').innerHTML = html;
+                document.getElementById('myModal').style.display = 'block';
+              });
+        });
+
+        var span = document.getElementsByClassName("close")[0];
+        span.onclick = function() {
+            document.getElementById("myModal").style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById("myModal")) {
+                document.getElementById("myModal").style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

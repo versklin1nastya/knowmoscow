@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="{{ url_for('static', filename='icon-192.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icon-192.png') }}">
+    <meta name="theme-color" content="#bb00c2">
+    <title>Статистика тестов</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #170213;
+            color: hsl(0, 0%, 100%);
+            margin: 0;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #bb00c2;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(187, 0, 194, 0.4);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+            background-color: #24081f;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 3px solid #bb00c2;
+            box-shadow: 0 4px 20px rgba(187, 0, 194, 0.4);
+        }
+
+        th, td {
+            padding: 20px 15px;
+            text-align: left;
+            border-bottom: 2px solid #bb00c2;
+            font-size: 1.1rem;
+        }
+
+        th {
+            background: linear-gradient(135deg, #bb00c2, #ff4ff6);
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(187, 0, 194, 0.1);
+        }
+
+        tr:hover {
+            background-color: rgba(255, 79, 246, 0.2);
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+
+        button {
+            background-color: #bb00c2;
+            color: hsl(0, 0%, 100%);
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 0 auto;
+            text-decoration: none;
+        }
+
+        button:hover {
+            background-color: #ff4ff6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(187, 0, 194, 0.4);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        td {
+            color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Статистика тестов</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Название теста</th>
+                    <th>Процент прохождения</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in user_results %}
+                    <tr>
+                        <td>{{ tests[result.test_id].title }}</td>
+                       {% set percentage = (result.correct_answers / result.total_questions * 100)|round(2) %}
+                        <td>{{ percentage }}%</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button onclick="location.href='/'">На главную</button>
+    </div>
+</body>
+</html>

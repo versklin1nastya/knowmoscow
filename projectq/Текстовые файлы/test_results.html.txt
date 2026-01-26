@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты тестов для группы {{ group_id }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #170213 0%, #24081f 50%, #1a0516 100%);
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: hsl(0, 0%, 100%);
+        }
+
+        .container {
+            background: rgba(36, 8, 31, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: clamp(30px, 4vw, 45px);
+            box-shadow: 0 20px 60px rgba(187, 0, 194, 0.4);
+            border: 2px solid #bb00c2;
+            max-width: 800px;
+            width: 100%;
+            animation: fadeInUp 0.8s ease-out;
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #bb00c2, #ff4ff6, #bb00c2);
+            border-radius: 22px;
+            z-index: -1;
+            animation: glow 3s ease-in-out infinite;
+            opacity: 0.5;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: clamp(1.6rem, 4vw, 2.2rem);
+            margin-bottom: 25px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #bb00c2, #ff4ff6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.3;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background: rgba(26, 5, 22, 0.6);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(187, 0, 194, 0.2);
+            animation: slideIn 0.6s ease-out;
+        }
+
+        .results-table thead {
+            background: linear-gradient(135deg, rgba(187, 0, 194, 0.3), rgba(255, 79, 246, 0.2));
+        }
+
+        .results-table th {
+            padding: clamp(15px, 3vw, 20px);
+            text-align: left;
+            font-weight: bold;
+            color: #ff4ff6;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            border-bottom: 2px solid rgba(187, 0, 194, 0.5);
+        }
+
+        .results-table td {
+            padding: clamp(12px, 2.5vw, 18px) clamp(15px, 3vw, 20px);
+            border-bottom: 1px solid rgba(187, 0, 194, 0.3);
+            color: #e0e0e0;
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            transition: all 0.3s ease;
+        }
+
+        .results-table tbody tr {
+            background: linear-gradient(135deg, rgba(187, 0, 194, 0.1), rgba(255, 79, 246, 0.05));
+        }
+
+        .results-table tbody tr:nth-child(even) {
+            background: linear-gradient(135deg, rgba(187, 0, 194, 0.05), rgba(255, 79, 246, 0.02));
+        }
+
+        .results-table tbody tr:hover {
+            background: linear-gradient(135deg, rgba(187, 0, 194, 0.2), rgba(255, 79, 246, 0.15));
+            transform: translateX(5px);
+        }
+
+        .score-cell {
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .score-excellent { color: #4cd964; }
+        .score-good { color: #5ac8fa; }
+        .score-average { color: #ffcc00; }
+        .score-poor { color: #ff6b4a; }
+
+        .empty-state {
+            text-align: center;
+            color: #a0a0a0;
+            padding: 40px;
+            background: rgba(187, 0, 194, 0.05);
+            border-radius: 15px;
+            border: 1px dashed rgba(187, 0, 194, 0.3);
+            margin-bottom: 25px;
+            font-style: italic;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: clamp(12px, 3vw, 16px) clamp(25px, 4vw, 35px);
+            background: linear-gradient(135deg, #bb00c2, #ff4ff6);
+            color: white;
+            text-decoration: none;
+            border-radius: 15px;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(187, 0, 194, 0.4);
+            text-align: center;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .back-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(187, 0, 194, 0.6);
+            background: linear-gradient(135deg, #ff4ff6, #bb00c2);
+            color: white;
+            text-decoration: none;
+        }
+
+        .back-button:active {
+            transform: translateY(-1px);
+        }
+
+        .stats-summary {
+            background: linear-gradient(135deg, rgba(187, 0, 194, 0.15), rgba(255, 79, 246, 0.1));
+            border: 1px solid rgba(187, 0, 194, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .stats-item {
+            display: inline-block;
+            margin: 0 15px;
+            color: #e0e0e0;
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+        }
+
+        .stats-value {
+            color: #ff4ff6;
+            font-weight: bold;
+            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+        }
+
+        /* Анимации */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 20px rgba(187, 0, 194, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(187, 0, 194, 0.8); }
+            100% { box-shadow: 0 0 20px rgba(187, 0, 194, 0.4); }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Адаптация для мобильных */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 25px 20px;
+                border-radius: 18px;
+            }
+
+            .results-table th,
+            .results-table td {
+                padding: 10px 12px;
+            }
+
+            .stats-item {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+
+            .results-table {
+                font-size: 0.9rem;
+            }
+
+            .back-button {
+                padding: 12px 20px;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Улучшенная фокусировка */
+        .back-button:focus {
+            outline: 3px solid rgba(187, 0, 194, 0.5);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Результаты тестов</h1>
+
+        {% if results %}
+            <div class="stats-summary">
+                <div class="stats-item">
+                    Участников: <span class="stats-value">{{ results|length }}</span>
+                </div>
+                <div class="stats-item">
+                    Средний балл: <span class="stats-value">{{ "%.1f"|format(results|map(attribute='score')|sum / results|length) if results else 0 }}</span>
+                </div>
+            </div>
+
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>👤 Участник</th>
+                        <th style="text-align: center;">🎯 Результат</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                        <tr style="animation-delay: {{ loop.index0 * 0.1 }}s">
+                            <td>{{ result.username }}</td>
+                            <td class="score-cell
+                                {% if result.score >= 80 %}score-excellent
+                                {% elif result.score >= 60 %}score-good
+                                {% elif result.score >= 40 %}score-average
+                                {% else %}score-poor
+                                {% endif %}">
+                                {{ result.score }}%
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">
+                Пока нет результатов тестов для этой группы
+            </div>
+        {% endif %}
+
+        <a href="{{ url_for('group_page', group_id=group_id) }}" class="back-button">
+            ← Вернуться к группе
+        </a>
+    </div>
+
+    <script>
+        // Добавляем анимацию появления для строк таблицы
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableRows = document.querySelectorAll('.results-table tbody tr');
+            tableRows.forEach((row, index) => {
+                row.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>

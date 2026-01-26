@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ url_for('static', filename='icon-192.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icon-192.png') }}">
+    <meta name="theme-color" content="#bb00c2">
+    <title>{{ group.name }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #170213 0%, #24081f 50%, #1a0516 100%);
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            color: hsl(0, 0%, 100%);
+        }
+
+        .container {
+            background: rgba(36, 8, 31, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: clamp(25px, 4vw, 40px);
+            box-shadow: 0 15px 40px rgba(187, 0, 194, 0.3);
+            border: 2px solid #bb00c2;
+            max-width: 900px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            margin-bottom: 20px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #bb00c2, #ff4ff6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .group-description {
+            text-align: center;
+            color: #e0e0e0;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            line-height: 1.6;
+            margin-bottom: 30px;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, rgba(187, 0, 194, 0.1), rgba(255, 79, 246, 0.05));
+            border-radius: 12px;
+            border: 1px solid rgba(187, 0, 194, 0.3);
+        }
+
+        .admin-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(187, 0, 194, 0.15), rgba(255, 79, 246, 0.1));
+            border-radius: 15px;
+            border: 1px solid rgba(187, 0, 194, 0.3);
+        }
+
+        .admin-link {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #bb00c2, #ff4ff6);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(187, 0, 194, 0.4);
+            text-align: center;
+            min-width: 180px;
+        }
+
+        .admin-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(187, 0, 194, 0.6);
+            background: linear-gradient(135deg, #ff4ff6, #bb00c2);
+            color: white;
+            text-decoration: none;
+        }
+
+        h2 {
+            color: #e0e0e0;
+            font-size: clamp(1.4rem, 3vw, 1.8rem);
+            margin: 30px 0 20px 0;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .tests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .test-card {
+            background: linear-gradient(135deg, rgba(187, 0, 194, 0.15), rgba(255, 79, 246, 0.1));
+            border: 1px solid rgba(187, 0, 194, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(187, 0, 194, 0.3);
+            background: linear-gradient(135deg, rgba(187, 0, 194, 0.25), rgba(255, 79, 246, 0.2));
+        }
+
+        .test-link {
+            color: #ff4ff6;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: clamp(1rem, 2.5vw, 1.1rem);
+            transition: color 0.3s ease;
+            display: block;
+            width: 100%;
+        }
+
+        .test-link:hover {
+            color: #bb00c2;
+        }
+
+        .no-tests {
+            text-align: center;
+            color: #a0a0a0;
+            font-style: italic;
+            padding: 30px;
+            background: rgba(187, 0, 194, 0.05);
+            border-radius: 12px;
+            border: 1px dashed rgba(187, 0, 194, 0.3);
+            margin-bottom: 25px;
+        }
+
+        .group-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .action-link {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, rgba(101, 78, 163, 0.8), rgba(138, 99, 210, 0.7));
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(101, 78, 163, 0.4);
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .action-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(101, 78, 163, 0.6);
+            background: linear-gradient(135deg, rgba(138, 99, 210, 0.8), rgba(101, 78, 163, 0.7));
+            color: white;
+            text-decoration: none;
+        }
+
+        .back-button {
+            display: block;
+            width: fit-content;
+            margin: 30px auto 0 auto;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.6);
+            background: linear-gradient(135deg, #495057, #6c757d);
+            color: white;
+            text-decoration: none;
+        }
+
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 20px rgba(187, 0, 194, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(187, 0, 194, 0.8); }
+            100% { box-shadow: 0 0 20px rgba(187, 0, 194, 0.4); }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        .test-card {
+            animation: slideIn 0.5s ease-out;
+        }
+
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 25px 20px;
+                border-radius: 18px;
+            }
+
+            .tests-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 12px;
+            }
+
+            .admin-actions,
+            .group-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .admin-link,
+            .action-link {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+
+            .test-card {
+                padding: 15px;
+                min-height: 80px;
+            }
+
+            .admin-link,
+            .action-link {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+        }
+
+
+        .admin-link:focus,
+        .action-link:focus,
+        .test-link:focus,
+        .back-button:focus {
+            outline: 3px solid rgba(187, 0, 194, 0.5);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ group.name }}</h1>
+
+        <div class="group-description">
+            {{ group.description }}
+        </div>
+
+        {% if session['user_id'] == group.owner_id %}
+            <div class="admin-actions">
+                <a href="{{ url_for('assign_test', group_id=group.id) }}" class="admin-link">
+                    📝 Назначить тест
+                </a>
+                <a href="{{ url_for('view_test_results', group_id=group.id) }}" class="admin-link">
+                    📊 Результаты тестов
+                </a>
+                <a href="{{ url_for('show_invite_code', group_id=group.id) }}" class="admin-link">
+                    🔗 Код приглашения
+                </a>
+            </div>
+        {% endif %}
+
+        <h2>📚 Тесты группы</h2>
+
+        {% if tests %}
+            <div class="tests-grid">
+                {% for test_id, test in tests.items() %}
+                    <div class="test-card" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+                        <a href="{{ url_for('test_route', id=test_id) }}" class="test-link">
+                            {{ test["title"] }}
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-tests">
+                В этой группе пока нет назначенных тестов
+            </div>
+        {% endif %}
+
+        <div class="group-actions">
+            <a href="{{ url_for('group_members', group_id=group.id) }}" class="action-link">
+                👥 Участники группы
+            </a>
+            <a href="{{ url_for('edit_group', group_id=group.id) }}" class="action-link">
+                ⚙️ Редактировать группу
+            </a>
+        </div>
+
+        <button class="back-button" onclick="location.href='/groups'">
+            ← Вернуться к списку групп
+        </button>
+    </div>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const testCards = document.querySelectorAll('.test-card');
+            testCards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>

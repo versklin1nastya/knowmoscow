@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <style>
+        body {
+            background-color: #170213;
+            color: hsl(0, 0%, 100%);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #ffffff;
+            text-align: center;
+            font-size: 2.5rem;
+            margin-top: 40px;
+            text-shadow: 0 2px 4px rgba(187, 0, 194, 0.4);
+        }
+
+        p {
+            color: #e0e0e0;
+            text-align: center;
+            font-size: 1.3em;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: #24081f;
+            padding: 40px;
+            border-radius: 15px;
+            border: 3px solid #bb00c2;
+            box-shadow: 0 4px 20px rgba(187, 0, 194, 0.4);
+        }
+
+        button {
+            background-color: #bb00c2;
+            color: hsl(0, 0%, 100%);
+            width: 200px;
+            height: 60px;
+            margin: 30px auto;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            display: block;
+        }
+
+        button:hover {
+            background-color: #ff4ff6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(187, 0, 194, 0.4);
+        }
+
+        /* Дополнительные стили для улучшения внешнего вида */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(187, 0, 194, 0.1) 0%, rgba(23, 2, 19, 0.9) 100%);
+            z-index: -1;
+        }
+
+        .content-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="content-wrapper">
+        <div class="container">
+            <h1>{{ title }}</h1>
+            <p>{{ description }}</p>
+        </div>
+        <button onclick="location.href='/'">Обратно</button>
+    </div>
+</body>
+</html>

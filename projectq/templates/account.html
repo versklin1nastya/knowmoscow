@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <link rel="icon" href="{{ url_for('static', filename='icon-192.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icon-192.png') }}">
+    <meta name="theme-color" content="#bb00c2">
+    <meta charset="UTF-8">
+    <title>Аккаунт</title>
+    <style>
+        body {
+            background-color: #170213;
+            color: hsl(0, 0%, 100%);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #170213 0%, #2a0a23 50%, #170213 100%);
+        }
+
+        .profile-container {
+            background-color: #24081f;
+            border-radius: 15px;
+            border: 3px solid #bb00c2;
+            box-shadow: 0 8px 32px rgba(187, 0, 194, 0.3);
+            padding: 50px 40px;
+            max-width: 600px;
+            width: 100%;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #bb00c2, #ff4ff6, #bb00c2);
+        }
+
+        h1 {
+            color: #bb00c2;
+            text-align: center;
+            font-size: 2.8rem;
+            margin-bottom: 40px;
+            text-shadow: 0 2px 8px rgba(187, 0, 194, 0.6);
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .user-info {
+            background: linear-gradient(145deg, #2a0a23, #1f0519);
+            padding: 35px;
+            border-radius: 12px;
+            border: 2px solid #bb00c2;
+            margin-bottom: 30px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-item {
+            font-size: 1.4rem;
+            color: #e0e0e0;
+            margin: 25px 0;
+            padding: 15px 20px;
+            background: rgba(187, 0, 194, 0.08);
+            border-radius: 10px;
+            border-left: 4px solid #bb00c2;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-item:hover {
+            background: rgba(187, 0, 194, 0.15);
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(187, 0, 194, 0.2);
+        }
+
+        .info-item::before {
+            content: '✦';
+            color: #ff4ff6;
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+
+        button {
+            background: linear-gradient(135deg, #bb00c2, #ff4ff6);
+            color: hsl(0, 0%, 100%);
+            width: 100%;
+            padding: 18px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.3rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(187, 0, 194, 0.5);
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-icon {
+            font-size: 3rem;
+            color: #bb00c2;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(187, 0, 194, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 15px;
+            }
+
+            .profile-container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .info-item {
+                font-size: 1.2rem;
+                padding: 12px 15px;
+            }
+
+            button {
+                padding: 15px 25px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-icon">👤</div>
+            <h1>Ваш профиль</h1>
+        </div>
+
+        <div class="user-info">
+            <div class="info-item">Имя: {{ user[0] }}</div>
+            <div class="info-item">Фамилия: {{ user[1] }}</div>
+            <div class="info-item">Логин: {{ user[2] }}</div>
+            <div class="info-item">Email: {{ user[3] }}</div>
+        </div>
+
+        <button onclick="location.href='/'">Вернуться на главную</button>
+    </div>
+</body>
+</html>

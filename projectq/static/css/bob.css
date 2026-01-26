@@ -1,0 +1,82 @@
+body{
+    background-image: url('/static/photo/Fon.jpg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    font-size: xx-large;
+}
+.modal-content {
+    background-color: rgba(65, 5, 107, 0.65);
+    width: 50%;
+    margin-left: 20%;
+    margin-right: 10%;
+    margin-bottom: 10%;
+    margin-top: 5%;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    color: hsl(0,0%,100%);
+}
+
+form {
+    margin-top: auto;
+}
+
+label, input {
+    display: block;
+    color: hsl(0,0%,100%);
+}
+
+input[type="text"], input[type="password"], input[type="email"] {
+    width: 45%;
+    border-radius: 5px;
+    padding: 7px;
+    box-sizing: border-box;
+    color: #000; /* Делаем текст, который вводится, черным */
+}
+
+
+.input-field {
+    width: calc(40% - (2 * var(--padding)));
+}
+
+.button {
+    background-color: #bb00c2;
+    color:hsl(0,0%,100%);
+    padding: 10px 20px;
+    margin-top: 10px
+}
+button:hover{
+background-color:#ff4ff6;
+}
+.login{
+display:flex;
+justify-content:center;
+align-items:center;
+
+}
+.blocklogin{
+display:flex;
+flex-direction : column ;
+align-items : center ;
+justify-content : center ;
+width :100%;
+}
+
+
+.modal-content a {
+    color: #D870D3;
+    text-decoration: none;
+}
+
+
+.modal-content a:hover {
+    color: #E0B0FF;
+    text-decoration: underline;
+}

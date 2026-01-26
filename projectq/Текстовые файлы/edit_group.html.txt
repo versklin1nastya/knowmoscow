@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактировать группу</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a0516 0%, #24081f 50%, #170213 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: hsl(0, 0%, 100%);
+        }
+
+        .container {
+            background: rgba(36, 8, 31, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: clamp(30px, 4vw, 45px);
+            box-shadow: 0 20px 60px rgba(187, 0, 194, 0.4);
+            border: 2px solid #bb00c2;
+            max-width: 600px;
+            width: 100%;
+            animation: fadeInUp 0.8s ease-out;
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #bb00c2, #ff4ff6, #bb00c2);
+            border-radius: 22px;
+            z-index: -1;
+            animation: glow 3s ease-in-out infinite;
+            opacity: 0.5;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: clamp(1.6rem, 4vw, 2.2rem);
+            margin-bottom: 25px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #bb00c2, #ff4ff6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.3;
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, rgba(255, 69, 0, 0.2), rgba(255, 100, 50, 0.15));
+            color: #ff6b4a;
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 69, 0, 0.4);
+            margin-bottom: 25px;
+            font-weight: 600;
+            text-align: center;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .edit-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: 600;
+            color: hsl(0, 0%, 100%);
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: clamp(12px, 3vw, 16px) clamp(15px, 3vw, 20px);
+            border: 2px solid rgba(187, 0, 194, 0.5);
+            border-radius: 12px;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            transition: all 0.3s ease;
+            background: rgba(26, 5, 22, 0.8);
+            color: hsl(0, 0%, 100%);
+            box-shadow: 0 4px 15px rgba(187, 0, 194, 0.2);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            resize: vertical;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #ff4ff6;
+            box-shadow: 0 6px 20px rgba(255, 79, 246, 0.4);
+            transform: translateY(-2px);
+            background: rgba(36, 8, 31, 0.9);
+        }
+
+        input[type="text"]::placeholder,
+        textarea::placeholder {
+            color: #a0a0a0;
+        }
+
+        textarea {
+            min-height: 120px;
+            line-height: 1.5;
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 140px;
+            padding: clamp(12px, 3vw, 16px) clamp(20px, 4vw, 30px);
+            border: none;
+            border-radius: 15px;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #bb00c2, #ff4ff6);
+            color: white;
+            box-shadow: 0 6px 20px rgba(187, 0, 194, 0.4);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(187, 0, 194, 0.6);
+            background: linear-gradient(135deg, #ff4ff6, #bb00c2);
+        }
+
+        .btn-cancel {
+            background: linear-gradient(135deg, rgba(101, 78, 163, 0.8), rgba(138, 99, 210, 0.7));
+            color: white;
+            box-shadow: 0 6px 20px rgba(101, 78, 163, 0.4);
+        }
+
+        .btn-cancel:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(101, 78, 163, 0.6);
+            background: linear-gradient(135deg, rgba(138, 99, 210, 0.8), rgba(101, 78, 163, 0.7));
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Анимации */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 20px rgba(187, 0, 194, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(187, 0, 194, 0.8); }
+            100% { box-shadow: 0 0 20px rgba(187, 0, 194, 0.4); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .container {
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        /* Адаптация для мобильных */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 25px 20px;
+                border-radius: 18px;
+            }
+
+            .buttons-container {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+
+            .edit-form {
+                gap: 15px;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Улучшенная фокусировка */
+        .btn:focus,
+        input:focus,
+        textarea:focus {
+            outline: 3px solid rgba(187, 0, 194, 0.5);
+            outline-offset: 2px;
+        }
+
+        /* Стили для иконок */
+        .btn::before {
+            font-size: 1.2em;
+        }
+
+        .btn-submit::before {
+            content: "💾";
+        }
+
+        .btn-cancel::before {
+            content: "←";
+        }
+
+        /* Счетчик символов */
+        .char-count {
+            text-align: right;
+            font-size: 0.9rem;
+            color: #a0a0a0;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✏️ Редактировать группу</h1>
+
+        {% if error %}
+            <div class="error-message">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="post" class="edit-form">
+            <div class="form-group">
+                <label for="name">Название группы:</label>
+                <input type="text" id="name" name="name" value="{{ group.name }}" placeholder="Введите название группы" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Описание группы:</label>
+                <textarea id="description" name="description" placeholder="Опишите вашу группу...">{{ group.description }}</textarea>
+                <div class="char-count" id="description-counter">0/500 символов</div>
+            </div>
+
+            <div class="buttons-container">
+                <button type="submit" class="btn btn-submit">
+                    Сохранить изменения
+                </button>
+                <a href="{{ url_for('group_page', group_id=group.id) }}" class="btn btn-cancel">
+                    Отмена
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Добавляем счетчик символов для текстового поля
+        const descriptionField = document.getElementById('description');
+        const charCount = document.getElementById('description-counter');
+
+        function updateCharCount() {
+            const length = descriptionField.value.length;
+            charCount.textContent = `${length}/500 символов`;
+
+            if (length > 450) {
+                charCount.style.color = '#ff6b4a';
+            } else {
+                charCount.style.color = '#a0a0a0';
+            }
+        }
+
+        // Инициализируем счетчик при загрузке
+        updateCharCount();
+        descriptionField.addEventListener('input', updateCharCount);
+
+        // Добавляем валидацию формы
+        document.querySelector('.edit-form').addEventListener('submit', function(e) {
+            const nameField = document.getElementById('name');
+            if (nameField.value.trim().length < 2) {
+                e.preventDefault();
+                nameField.focus();
+                nameField.style.borderColor = '#ff6b4a';
+                return false;
+            }
+        });
+
+        // Сбрасываем цвет границы при вводе
+        document.getElementById('name').addEventListener('input', function() {
+            this.style.borderColor = 'rgba(187, 0, 194, 0.5)';
+        });
+    </script>
+</body>
+</html>
