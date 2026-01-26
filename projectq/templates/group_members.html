@@ -39,19 +39,6 @@
             position: relative;
         }
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #bb00c2, #ff4ff6, #bb00c2);
-            border-radius: 22px;
-            z-index: -1;
-            animation: glow 3s ease-in-out infinite;
-            opacity: 0.5;
-        }
 
         h1 {
             text-align: center;
@@ -92,10 +79,6 @@
             background: linear-gradient(135deg, rgba(187, 0, 194, 0.25), rgba(255, 79, 246, 0.2));
         }
 
-        .member-item::before {
-            content: "👤";
-            font-size: 1.2em;
-        }
 
         .member-item:nth-child(odd) {
             background: linear-gradient(135deg, rgba(187, 0, 194, 0.1), rgba(255, 79, 246, 0.05));
@@ -226,7 +209,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>👥 Участники группы</h1>
+        <h1>Участники группы</h1>
 
         <div class="members-count">
             {{ members|length }} участник(ов)
@@ -235,7 +218,7 @@
         {% if members %}
             <ul class="members-list">
                 {% for member in members %}
-                    <li class="member-item" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+                    <li class="member-item" style="animation-delay: {{ loop.index0 * 0.1 }} s">
                         {{ member.login }}
                     </li>
                 {% endfor %}
@@ -247,7 +230,7 @@
         {% endif %}
 
         <a href="{{ url_for('group_page', group_id=group.id) }}" class="back-button">
-            ← Вернуться к группе
+            Отмена
         </a>
     </div>
 

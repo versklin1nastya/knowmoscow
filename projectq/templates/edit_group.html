@@ -39,19 +39,6 @@
             position: relative;
         }
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #bb00c2, #ff4ff6, #bb00c2);
-            border-radius: 22px;
-            z-index: -1;
-            animation: glow 3s ease-in-out infinite;
-            opacity: 0.5;
-        }
 
         h1 {
             text-align: center;
@@ -258,20 +245,10 @@
             outline-offset: 2px;
         }
 
-        /* Стили для иконок */
         .btn::before {
             font-size: 1.2em;
         }
 
-        .btn-submit::before {
-            content: "💾";
-        }
-
-        .btn-cancel::before {
-            content: "←";
-        }
-
-        /* Счетчик символов */
         .char-count {
             text-align: right;
             font-size: 0.9rem;
@@ -282,7 +259,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>✏️ Редактировать группу</h1>
+        <h1>Редактировать группу</h1>
 
         {% if error %}
             <div class="error-message">
