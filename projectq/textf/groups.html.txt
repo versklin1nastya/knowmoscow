@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Группы</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #170213 0%, #24081f 50%, #1a0516 100%);
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            color: hsl(0, 0%, 100%);
+        }
+
+        .container {
+            background: rgba(36, 8, 31, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: clamp(25px, 4vw, 40px);
+            box-shadow: 0 15px 40px rgba(187, 0, 194, 0.3);
+            border: 2px solid #bb00c2;
+            margin: 20px auto;
+            max-width: 800px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            margin-bottom: clamp(20px, 3vh, 30px);
+            font-weight: bold;
+            background: linear-gradient(135deg, #bb00c2, #ff4ff6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h3 {
+            color: #e0e0e0;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            text-align: center;
+            font-weight: normal;
+        }
+
+        .groups-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 30px;
+        }
+
+        .group-item {
+            background: linear-gradient(135deg, rgba(187, 0, 194, 0.15), rgba(255, 79, 246, 0.1));
+            margin: 12px 0;
+            padding: clamp(15px, 3vw, 20px);
+            border-radius: 15px;
+            border: 1px solid rgba(187, 0, 194, 0.3);
+            transition: all 0.3s ease;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .group-item:hover {
+            transform: translateX(8px);
+            box-shadow: 0 6px 20px rgba(187, 0, 194, 0.3);
+            background: linear-gradient(135deg, rgba(187, 0, 194, 0.25), rgba(255, 79, 246, 0.2));
+        }
+
+        .group-link {
+            color: #ff4ff6;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+            transition: all 0.3s ease;
+            display: block;
+        }
+
+        .group-link:hover {
+            color: #bb00c2;
+            text-decoration: none;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #e0e0e0;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            padding: 30px;
+            background: rgba(187, 0, 194, 0.1);
+            border-radius: 15px;
+            border: 1px dashed rgba(187, 0, 194, 0.3);
+            margin-bottom: 25px;
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: clamp(12px, 3vw, 16px) clamp(25px, 4vw, 35px);
+            background: linear-gradient(135deg, #bb00c2, #ff4ff6);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(187, 0, 194, 0.4);
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            min-width: 180px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(187, 0, 194, 0.6);
+            background: linear-gradient(135deg, #ff4ff6, #bb00c2);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Анимации */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 20px rgba(187, 0, 194, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(187, 0, 194, 0.8); }
+            100% { box-shadow: 0 0 20px rgba(187, 0, 194, 0.4); }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        .group-item:nth-child(1) { animation-delay: 0.1s; }
+        .group-item:nth-child(2) { animation-delay: 0.2s; }
+        .group-item:nth-child(3) { animation-delay: 0.3s; }
+        .group-item:nth-child(4) { animation-delay: 0.4s; }
+
+        /* Адаптация для мобильных */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 25px 20px;
+                border-radius: 18px;
+                margin: 15px auto;
+            }
+
+            .buttons-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+
+            .group-item {
+                padding: 12px 15px;
+                margin: 8px 0;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Ландшафтная ориентация */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                margin: 10px auto;
+                padding: 20px;
+            }
+        }
+
+        /* Улучшенная фокусировка */
+        .btn:focus,
+        .group-link:focus {
+            outline: 3px solid rgba(187, 0, 194, 0.5);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👥 Группы</h1>
+        <h3>Если вы не состоите ни в одной группе, то вы можете создать группу или присоединиться по ссылке, которую вам отправит администратор группы.</h3>
+
+        {% if user_groups %}
+            <ul class="groups-list">
+                {% for group in user_groups %}
+                    <li class="group-item">
+                        <a href="{{ url_for('group_page', group_id=group.id) }}" class="group-link">
+                            {{ group.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="empty-message">
+                Вы пока не состоите ни в одной группе.
+            </div>
+        {% endif %}
+
+        <div class="buttons-container">
+            <button class="btn" onclick="location.href='{{ url_for('create_group') }}'">
+                Создать группу
+            </button>
+            <button class="btn" onclick="location.href='{{ url_for('Mainpage') }}'">
+                На Главную
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Добавляем анимацию появления для элементов списка
+        document.addEventListener('DOMContentLoaded', function() {
+            const groupItems = document.querySelectorAll('.group-item');
+            groupItems.forEach((item, index) => {
+                item.style.animationDelay = `${(index + 1) * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>

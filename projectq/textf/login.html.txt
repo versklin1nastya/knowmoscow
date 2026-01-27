@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #170213 0%, #24081f 50%, #1a0516 100%);
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: hsl(0, 0%, 100%);
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 500px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .modal-content {
+            background: rgba(36, 8, 31, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: clamp(25px, 4vw, 40px);
+            box-shadow: 0 15px 40px rgba(187, 0, 194, 0.3);
+            border: 2px solid #bb00c2;
+        }
+
+        .blocklogin {
+            text-align: center;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            margin-bottom: clamp(25px, 4vh, 35px);
+            font-weight: bold;
+            background: linear-gradient(135deg, #bb00c2, #ff4ff6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            font-weight: 600;
+            color: hsl(0, 0%, 100%);
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            gap: 8px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: clamp(12px, 3vw, 16px) clamp(15px, 3vw, 20px);
+            border: 2px solid rgba(187, 0, 194, 0.5);
+            border-radius: 12px;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            transition: all 0.3s ease;
+            background: rgba(26, 5, 22, 0.8);
+            color: hsl(0, 0%, 100%);
+            box-shadow: 0 4px 15px rgba(187, 0, 194, 0.2);
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #ff4ff6;
+            box-shadow: 0 6px 20px rgba(255, 79, 246, 0.4);
+            transform: translateY(-2px);
+            background: rgba(36, 8, 31, 0.9);
+        }
+
+        input[type="text"]::placeholder,
+        input[type="email"]::placeholder,
+        input[type="password"]::placeholder {
+            color: #a0a0a0;
+        }
+
+        .button {
+            width: 100%;
+            padding: clamp(15px, 3vw, 18px);
+            background: linear-gradient(135deg, #bb00c2, #ff4ff6);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: clamp(1.1rem, 3vw, 1.3rem);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(187, 0, 194, 0.4);
+            margin-top: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(187, 0, 194, 0.6);
+            background: linear-gradient(135deg, #ff4ff6, #bb00c2);
+        }
+
+        .button:active {
+            transform: translateY(-1px);
+        }
+
+        p {
+            text-align: center;
+            color: #e0e0e0;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            margin-top: 20px;
+        }
+
+        a {
+            color: #ff4ff6;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #bb00c2;
+            text-decoration: underline;
+        }
+
+        /* Анимации */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 20px rgba(187, 0, 194, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(187, 0, 194, 0.8); }
+            100% { box-shadow: 0 0 20px rgba(187, 0, 194, 0.4); }
+        }
+
+        .modal-content {
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        /* Адаптация для мобильных */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .modal-content {
+                padding: 25px 20px;
+                border-radius: 18px;
+            }
+
+            h2 {
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .modal-content {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+
+            form {
+                gap: 15px;
+            }
+
+            .button {
+                padding: 14px;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Ландшафтная ориентация для мобильных */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+            }
+
+            .modal {
+                margin: 20px auto;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+        }
+
+        /* Улучшенная фокусировка для доступности */
+        .button:focus,
+        input:focus {
+            outline: 3px solid rgba(187, 0, 194, 0.5);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="blocklogin">
+                <h2>Регистрация</h2>
+                <form method="POST">
+                    <label for="name">
+                        Имя:
+                        <input type="text" id="name" name="name" placeholder="Введите ваше имя">
+                    </label>
+                    <label for="surname">
+                        Фамилия:
+                        <input type="text" id="surname" name="surname" placeholder="Введите вашу фамилию">
+                    </label>
+                    <label for="login">
+                        Логин:
+                        <input type="text" id="login" name="login" placeholder="Придумайте логин">
+                    </label>
+                    <label for="email">
+                        Email:
+                        <input type="email" id="email" name="email" placeholder="Введите ваш email">
+                    </label>
+                    <label for="password">
+                        Пароль:
+                        <input type="password" id="password" name="password" placeholder="Придумайте пароль">
+                    </label>
+                    <input type="submit" value="Зарегистрироваться" class="button">
+                    <p>Уже зарегистрированы? <a href="enter">Войдите в систему.</a></p>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

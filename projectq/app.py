@@ -7,13 +7,13 @@ import os
 import qrcode
 import io
 import base64
-from flask import Flask, request, render_template, redirect, url_for, flash, session
+from flask import Flask, request, render_template, redirect, url_for, flash, session, abort
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
-DATABASE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database (1).db')
+DATABASE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database (1) (1).db')
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 
 
@@ -34,7 +34,6 @@ def load_tests():
         return {int(k): v for k, v in raw.items()}
 
 
-# Загружаем данные один раз при запуске
 places = load_places()
 tests = load_tests()
 
@@ -277,6 +276,7 @@ def create_group():
 def edit_group(group_id):
     if 'user_id' not in session:
         return redirect(url_for('enter'))
+
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM groups WHERE id = ?", (group_id,))
@@ -284,16 +284,18 @@ def edit_group(group_id):
     if not group or group['owner_id'] != session['user_id']:
         conn.close()
         flash("У вас нет прав на редактирование этой группы", "error")
-        return redirect(url_for('groups'))
+        return redirect(url_for('group_page', group_id=group_id))
     if request.method == 'POST':
         name = request.form['name']
         description = request.form['description']
+
         try:
             cursor.execute("UPDATE groups SET name = ?, description = ? WHERE id = ?", (name, description, group_id))
             conn.commit()
             return redirect(url_for('group_page', group_id=group_id))
+
         except sqlite3.Error as e:
-            print(f"Ошибка базы данных: {e}")
+            print(f"Ошибка базы данных при обновлении группы {group_id}: {e}")
             conn.rollback()
             return render_template('edit_group.html', group=group, error="Ошибка сохранения изменений")
         finally:
@@ -407,15 +409,45 @@ def assign_test(group_id):
 def view_test_results(group_id):
     if 'user_id' not in session:
         return redirect(url_for('enter'))
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT owner_id FROM groups WHERE id = ?", (group_id,))
-    group = cursor.fetchone()
-    if not group or group['owner_id'] != session['user_id']:
-        conn.close()
-        return "У вас нет прав на просмотр результатов тестов в этой группе."
-    conn.close()
-    return render_template('test_results.html', group_id=group_id)
+
+    user_id = session['user_id']
+    conn = None
+    results = None
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT owner_id FROM groups WHERE id = ?", (group_id,))
+        group = cursor.fetchone()
+
+        if not group:
+            abort(404, description=f"Группа с ID {group_id} не найдена.")
+
+        if group['owner_id'] != user_id:
+            abort(403, description="У вас нет прав на просмотр результатов тестов в этой группе.")
+        results_query = """
+        SELECT 
+            u.login, 
+            tr.correct_answers 
+        FROM results tr
+        JOIN users u ON tr.user_id = u.id
+        WHERE tr.group_id = ?
+        ORDER BY tr.correct_answers DESC
+        """
+        cursor.execute(results_query, (group_id,))
+        results = cursor.fetchall()
+    except Exception as e:
+        print(f"Database error: {e}")
+        abort(500, description="Ошибка при получении результатов из базы данных.")
+
+    finally:
+        if conn:
+            conn.close()
+    return render_template(
+        'test_results.html',
+        group_id=group_id,
+        results=results
+    )
 
 
 @app.route('/group/<int:group_id>')

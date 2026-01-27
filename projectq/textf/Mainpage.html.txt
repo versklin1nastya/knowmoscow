@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="theme-color" content="#bb00c2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Интерактивная карта">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="icon" href="/static/icon-192.png">
+    <link rel="apple-touch-icon" href="/static/icon-192.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Интерактивная карта</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=c0a075bd-a598-46df-9e0c-23f74e31f651&lang=ru_RU"
+            type="text/javascript"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #170213;
+            color: hsl(0, 0%, 100%);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Панель кнопок - красивая панель вверху */
+        #buttons {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 12px 8px;
+            background: linear-gradient(135deg, #24081f, #1a0516);
+            border-bottom: 3px solid #bb00c2;
+            box-shadow: 0 5px 25px rgba(187, 0, 194, 0.3);
+            min-height: 70px;
+            backdrop-filter: blur(10px);
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        #buttons button {
+            background: linear-gradient(135deg, #bb00c2, #ff4ff6);
+            color: white;
+            flex: 1;
+            min-width: 15%;
+            height: 50px;
+            margin: 0 2px;
+            font-size: 0.7rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(187, 0, 194, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+        }
+
+        #buttons button::before {
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+
+        #buttons button:nth-child(1)::before { content: "🔐"; }
+        #buttons button:nth-child(2)::before { content: "📝"; }
+        #buttons button:nth-child(3)::before { content: "👤"; }
+        #buttons button:nth-child(4)::before { content: "🏆"; }
+        #buttons button:nth-child(5)::before { content: "⭐"; }
+        #buttons button:nth-child(6)::before { content: "👥"; }
+
+        #buttons button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 8px rgba(187, 0, 194, 0.4);
+        }
+
+        /* Контейнер для карты */
+        .map-container {
+            flex: 1;
+            width: 100%;
+            padding: 10px;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            border: 3px solid #bb00c2;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(187, 0, 194, 0.5);
+        }
+
+        /* Стили для балуна */
+        .custom-balloon {
+            background-color: #333333;
+            color: white;
+            border-radius: 16px;
+            padding: 0;
+            max-width: 320px;
+            box-shadow: 0 8px 30px rgba(187, 0, 194, 0.5);
+            border: 2px solid #bb00c2;
+        }
+
+        .balloon-header {
+            background: linear-gradient(135deg, #bb00c2, #ff4ff6);
+            padding: 20px;
+            border-radius: 16px 16px 0 0;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .balloon-content {
+            padding: 20px;
+        }
+
+        .balloon-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #bb00c2;
+        }
+
+        .balloon-description {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            color: #e0e0e0;
+        }
+
+        .balloon-buttons-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .balloon-btn {
+            background: linear-gradient(135deg, #bb00c2, #ff4ff6);
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            flex: 1;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(187, 0, 194, 0.3);
+        }
+
+        .balloon-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 5px rgba(187, 0, 194, 0.4);
+        }
+
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #bb00c2, #ff4ff6);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            z-index: 10000;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            display: none;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        /* Стили для PWA установки */
+        .install-prompt {
+            position: fixed;
+            top: 80px;
+            right: 15px;
+            background: linear-gradient(135deg, #bb00c2, #ff4ff6);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 1000;
+            display: none;
+            font-size: 11px;
+            border: none;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(187, 0, 194, 0.4);
+        }
+
+        /* Адаптация для мобильных */
+        @media (max-width: 768px) {
+            #buttons {
+                padding: 10px 6px;
+                min-height: 60px;
+            }
+
+            #buttons button {
+                height: 45px;
+                font-size: 0.65rem;
+                border-radius: 10px;
+                margin: 0 1px;
+                min-width: 15%;
+            }
+
+            #buttons button::before {
+                font-size: 0.9rem;
+            }
+
+            .map-container {
+                padding: 8px;
+            }
+
+            #map {
+                border-radius: 15px;
+            }
+
+            .custom-balloon {
+                max-width: 280px;
+            }
+
+            .balloon-header {
+                padding: 15px;
+                font-size: 16px;
+            }
+
+            .balloon-content {
+                padding: 15px;
+            }
+
+            .balloon-image {
+                height: 150px;
+            }
+        }
+
+        /* Адаптация для очень маленьких экранов */
+        @media (max-width: 480px) {
+            #buttons button {
+                height: 40px;
+                font-size: 0.6rem;
+                border-radius: 8px;
+            }
+
+            #buttons button::before {
+                font-size: 0.8rem;
+            }
+
+            .balloon-buttons-container {
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .balloon-btn {
+                padding: 10px;
+                font-size: 11px;
+            }
+        }
+
+        /* Ландшафтная ориентация */
+        @media (max-height: 500px) and (orientation: landscape) {
+            #buttons {
+                min-height: 50px;
+                padding: 6px 8px;
+            }
+
+            #buttons button {
+                height: 35px;
+                font-size: 0.55rem;
+            }
+
+            #buttons button::before {
+                font-size: 0.7rem;
+            }
+        }
+
+        /* Анимации */
+        @keyframes glow {
+            0% { box-shadow: 0 0 20px rgba(187, 0, 194, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(187, 0, 194, 0.8); }
+            100% { box-shadow: 0 0 20px rgba(187, 0, 194, 0.4); }
+        }
+
+        #map {
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .notification {
+            animation: fadeIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<!-- PWA Service Worker Registration -->
+<script>
+// Регистрация Service Worker для локального использования
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/static/sw.js')
+        .then((registration) => {
+            console.log('Service Worker зарегистрирован для локального использования');
+        })
+        .catch((error) => {
+            console.log('Ошибка регистрации Service Worker:', error);
+        });
+}
+
+// Функция для "установки" PWA локально
+function setupLocalPWA() {
+    // Проверяем, запущено ли как PWA
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('Запущено в PWA режиме');
+        document.body.style.paddingTop = 'env(safe-area-inset-top)';
+    }
+
+    // Показываем инструкцию по добавлению на главный экран
+    if (!window.matchMedia('(display-mode: standalone)').matches) {
+        setTimeout(() => {
+            showInstallInstructions();
+        }, 10000); // Через 10 секунд
+    }
+}
+
+function showInstallInstructions() {
+    const instructions = `
+        💡 Для лучшего опыта добавьте приложение на главный экран:
+
+        Chrome Android:
+        1. Нажмите ⋮ (меню)
+        2. Выберите "Добавить на главный экран"
+
+        Safari iPhone:
+        1. Нажмите 🗙→ (поделиться)
+        2. Выберите "На экран «Домой»"
+
+        После этого приложение будет запускаться в полноэкранном режиме!
+    `;
+
+    // Создаем красивый prompt
+    if (confirm("Хотите установить приложение на устройство?")) {
+        alert(instructions);
+    }
+}
+
+// Инициализация при загрузке
+document.addEventListener('DOMContentLoaded', setupLocalPWA);
+</script>
+<body>
+
+<!-- Панель кнопок вверху -->
+<div id="buttons">
+    <button onclick="location.href='/enter'">Вход</button>
+    <button onclick="location.href='/login'">Регистрация</button>
+    <button onclick="location.href='/account'">Аккаунт</button>
+    <button onclick="location.href='/rating'">Достижения</button>
+    <button onclick="location.href='/achievement'">Рейтинг</button>
+    <button onclick="location.href='/groups'">Группа</button>
+</div>
+
+<!-- Карта -->
+<div class="map-container">
+    <div id="map"></div>
+</div>
+
+<!-- Уведомления -->
+<div class="notification" id="notification"></div>
+
+<!-- PWA Service Worker Registration -->
+<script>
+// Регистрация Service Worker
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/static/sw.js')
+        .then((registration) => {
+            console.log('Service Worker успешно зарегистрирован:', registration);
+        })
+        .catch((error) => {
+            console.log('Ошибка регистрации Service Worker:', error);
+        });
+}
+
+// Обработчик установки PWA
+let deferredPrompt;
+const installButton = document.createElement('button');
+installButton.innerHTML = '📱 Установить';
+installButton.className = 'install-prompt';
+installButton.onclick = installPWA;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    // Показать кнопку установки через 5 секунд
+    setTimeout(() => {
+        installButton.style.display = 'block';
+        document.body.appendChild(installButton);
+    }, 5000);
+});
+
+function installPWA() {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('Пользователь принял установку');
+                showNotification('Приложение успешно установлено!');
+                installButton.style.display = 'none';
+            }
+            deferredPrompt = null;
+        });
+    }
+}
+
+// Скрыть кнопку, если приложение уже установлено
+window.addEventListener('appinstalled', (evt) => {
+    console.log('Приложение успешно установлено');
+    installButton.style.display = 'none';
+});
+
+// Проверка, запущено ли приложение в PWA режиме
+if (window.matchMedia('(display-mode: standalone)').matches) {
+    console.log('Запущено как PWA');
+    document.body.style.paddingTop = 'env(safe-area-inset-top)';
+}
+
+// Функции для уведомлений
+function showNotification(message) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.style.display = 'block';
+    setTimeout(() => {
+        notification.style.display = 'none';
+    }, 3000);
+}
+
+// Оптимизация для мобильных устройств
+document.addEventListener('touchstart', function() {}, {passive: true});
+
+// Предотвращение масштабирования на iOS
+document.addEventListener('touchmove', function(e) {
+    if (e.scale !== 1) {
+        e.preventDefault();
+    }
+}, { passive: false });
+</script>
+
+<script type="text/javascript">
+    ymaps.ready(function () {
+        var myMap = new ymaps.Map('map', {
+            center: [55.7558, 37.6173],
+            zoom: 10,
+            controls: []
+        }, {
+            restrictMapArea: [
+                [55.3, 36.2],
+                [56.2, 38.5]
+            ]
+        });
+
+        // Функция для построения маршрута или показа точки
+        function buildRoute(lat, lon, placeTitle) {
+            if (!navigator.geolocation) {
+                // Если геолокация не поддерживается - показываем точку
+                showPointOnYandexMaps(lat, lon, placeTitle);
+                return;
+            }
+
+            // Пытаемся получить местоположение пользователя
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    // Успешно получили геолокацию - строим маршрут
+                    var userLat = position.coords.latitude;
+                    var userLon = position.coords.longitude;
+
+                    // Проверяем, что координаты в пределах Москвы
+                    if (userLat < 55.3 || userLat > 56.2 || userLon < 36.2 || userLon > 38.5) {
+                        showNotification('Вы находитесь за пределами Москвы. Показываем маршрут из центра.');
+                        userLat = 55.7558;
+                        userLon = 37.6173;
+                    }
+
+                    // Строим маршрут от пользователя к точке
+                    var yandexMapsUrl = `https://yandex.ru/maps/?rtext=${userLat},${userLon}~${lat},${lon}&rtt=auto`;
+                    window.open(yandexMapsUrl, '_blank');
+                    showNotification('Маршрут построен от вашего местоположения!');
+                },
+                function(error) {
+                    // Не удалось получить геолокацию - показываем точку
+                    console.log('Геолокация недоступна, показываем точку:', error);
+                    showPointOnYandexMaps(lat, lon, placeTitle);
+
+                    // Показываем уведомление только если это не просто отказ
+                    if (error.code !== error.PERMISSION_DENIED) {
+                        showNotification('Показываем местоположение на карте');
+                    }
+                },
+                {
+                    enableHighAccuracy: false, // Уменьшаем точность для более быстрого ответа
+                    timeout: 5000, // Короткий таймаут - если долго определяет, сразу показываем точку
+                    maximumAge: 60000
+                }
+            );
+        }
+
+        // Функция для показа точки на Яндекс Картах
+        function showPointOnYandexMaps(lat, lon, placeTitle) {
+            // Формируем URL для открытия точки на Яндекс Картах
+            var yandexMapsUrl = `https://yandex.ru/maps/?pt=${lon},${lat}&z=16&l=map`;
+
+            // Если есть название места, добавляем его в текст
+            if (placeTitle) {
+                yandexMapsUrl += `&text=${encodeURIComponent(placeTitle)}`;
+            }
+
+            window.open(yandexMapsUrl, '_blank');
+        }
+
+        // Функция для создания HTML содержимого балуна
+        function createBalloonContent(title, image, description, id, lat, lon) {
+            return `
+                <div class="custom-balloon">
+                    <div class="balloon-header">${title}</div>
+                    <div class="balloon-content">
+                        <img src="${image}" alt="${title}" class="balloon-image" onerror="this.src='https://via.placeholder.com/350x200/333333/bb00c2?text=Изображение+не+загружено'">
+                        <div class="balloon-description">${description}</div>
+                        <div class="balloon-buttons-container">
+                            <button class="balloon-btn info-btn" data-id="${id}">Информация</button>
+                            <button class="balloon-btn test-btn" data-id="${id}">Тест</button>
+                            <button class="balloon-btn route-btn" data-lat="${lat}" data-lon="${lon}" data-title="${title}">Маршрут</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Данные о достопримечательностях
+        var places = [
+            {
+                id: 1,
+                coords: [55.7520233, 37.6174994],
+                title: "Московский Кремль",
+                image: "https://cdn.culture.ru/images/0ed8639c-ed61-5cf3-af66-2fc0015e2ce5",
+                description: "Московский Кремль — древнейшая часть столицы России, которая имеет большое историческое и культурное значение"
+            },
+            {
+                id: 2,
+                coords: [55.760221, 37.618561],
+                title: "Большой театр",
+                image: "https://i6.photo.2gis.com/images/branch/32/4503599636707062_dcd9.jpg",
+                description: "Большой театр — один из крупнейших и старейших в России и один из самых значительных в мире театров оперы и балета."
+            },
+            {
+                id: 3,
+                coords: [55.761092, 37.578308],
+                title: "Московский зоопарк",
+                image: "https://i.pinimg.com/originals/3d/df/e6/3ddfe6c5bf2f0be744c5cc936c4689dc.jpg",
+                description: "Московский зоопарк — зоологический парк в центре Москвы, один из старейших зоопарков в Европе (основан в 1864 году)."
+            },
+            {
+                id: 4,
+                coords: [55.765263, 37.667749],
+                title: "Школа акварели Сергея Андрияки",
+                image: "https://i5.photo.2gis.com/images/branch/0/30258560079377639_9666.jpg",
+                description: "Школа акварели Сергея Андрияки — это место, где любой желающий может научиться основам классической акварели и получить дополнительное художественное образование"
+            },
+            {
+                id: 5,
+                coords: [55.752507, 37.623150],
+                title: "Собор Василия Блаженного",
+                image: "https://kartinki.pics/uploads/posts/2022-03/1647533238_10-kartinkin-net-p-sobor-vasiliya-blazhennogo-kartinki-12.png",
+                description: "Храм Василия Блаженного (Собор Покрова Пресвятой Богородицы на Рву) — один из самых красивых и узнаваемых архитектурных памятников Москвы."
+            },
+            {
+                id: 6,
+                coords: [55.749588, 37.535299],
+                title: "Москва-Сити",
+                image: "https://extraguide.ru/images/t/fc36080b81671299808889e986e3f4075bd81f84.jpeg",
+                description: "Московский деловой центр «Москва-Сити» — ультрасовременный архитектурный комплекс небоскрёбов из стекла и бетона."
+            },
+            {
+                id: 7,
+                coords: [55.850939, 37.466287],
+                title: "Северный Речной Вокзал",
+                image: "https://cdn1.ozone.ru/s3/multimedia-w/6096547028.jpg",
+                description: "Северный речной вокзал — один из двух речных вокзалов Москвы (вместе с Южным), ранее Химкинский речной вокзал."
+            },
+            {
+                id: 8,
+                coords: [55.793263, 37.552987],
+                title: "Петровский путевой дворец",
+                image: "https://i01.fotocdn.net/s217/fe8c69fd102a2f80/public_pin_l/2962922625.jpg",
+                description: "Петровский путевой дворец в Москве — памятник русской неоготической архитектуры, построенный в 1776–1780-х годах по указу Екатерины II."
+            },
+            {
+                id: 9,
+                coords: [55.819682, 37.611663],
+                title: "Останкинская телебашня",
+                image: "https://avatars.mds.yandex.net/i?id=d9025058545230bda027fc48c0828386_l-8152091-images-thumbs&n=13",
+                description: "Останкинской телебашни находится небольшой музей, где можно узнать об истории и технических аспектах этого архитектурного чуда."
+            },
+            {
+                id: 10,
+                coords: [55.822751, 37.639752],
+                title: "Музей космонавтики",
+                image: "https://cdn.culture.ru/images/34c5d460-7b01-5b41-be21-611af9b11549",
+                description: "Музей космонавтики — это место, где каждый может окунуться в мир космоса, узнать много нового о достижениях человечества в освоении космического пространства"
+            },
+            {
+                id: 11,
+                coords: [55.832985, 37.618413],
+                title: "Москвариум",
+                image: "https://www.voayge-kaluga.ru/_si/6/25788200.jpg",
+                description: "«Москвариум» — центр океанографии и морской биологии в Москве"
+            },
+            {
+                id: 12,
+                coords: [55.865786, 37.506755],
+                title: "Усадьба Грачёвка",
+                image: "https://a.d-cd.net/lGAAAgIhxuA-1920.jpg",
+                description: "Усадьба Грачёвка — ранее подмосковное село и усадьба, в XV–XVI веках принадлежавшая в одно время Третьяковым-Ховриным."
+            },
+            {
+                id: 13,
+                coords: [55.794308, 37.749258],
+                title: "Музей оружия",
+                image: "https://avatars.mds.yandex.net/get-altay/5448678/2a0000017eba78af242e3151dc0033d5fe5f/orig",
+                description: "Музей оружия в Москве — первый в России интерактивный музей, где все экспонаты можно трогать и примерять обмундирование различных эпох"
+            },
+            {
+                id: 14,
+                coords: [55.804522, 37.670672],
+                title: "Парк Сокольники",
+                image: "https://avatars.dzeninfra.ru/get-zen_doc/271828/pub_66768b15c3201e69a36baae2_66768fc556480e19084705d0/scale_1200",
+                description: "Парк культуры и отдыха «Сокольники» – памятник садово-паркового искусства, который сочетает в себе и площадки для проведения масштабных фестивалей, и тихие уголки нетронутой природы."
+            }
+        ];
+
+        // Создание меток на карте
+        places.forEach(function(place) {
+            var myPlacemark = new ymaps.Placemark(place.coords, {
+                balloonContentHeader: place.title,
+                balloonContentBody: createBalloonContent(
+                    place.title,
+                    place.image,
+                    place.description,
+                    place.id,
+                    place.coords[0],
+                    place.coords[1]
+                )
+            }, {
+                preset: 'islands#violetIcon'
+            });
+
+            myMap.geoObjects.add(myPlacemark);
+        });
+
+        // Обработчик кликов по кнопкам в балунах
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('info-btn')) {
+                var id = e.target.dataset.id;
+                window.location.href = "/information?id=" + id;
+            } else if (e.target && e.target.classList.contains('test-btn')) {
+                var id = e.target.dataset.id;
+                window.location.href = "/test?id=" + id;
+            } else if (e.target && e.target.classList.contains('route-btn')) {
+                var lat = e.target.dataset.lat;
+                var lon = e.target.dataset.lon;
+                var title = e.target.dataset.title;
+                buildRoute(lat, lon, title);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
