@@ -255,12 +255,24 @@
         <h1>Результаты тестов</h1>
 
         {% if results %}
+            {% set total_score = 0 %}
+            {% for res in results %}
+                {# Используем квадратные скобки для доступа к ключу словаря #}
+                {% set total_score = total_score + res['correct_answers'] %}
+            {% endfor %}
             <div class="stats-summary">
                 <div class="stats-item">
                     Участников: <span class="stats-value">{{ results|length }}</span>
                 </div>
                 <div class="stats-item">
-                    Средний балл: <span class="stats-value">{{ "%.1f"|format(results|map(attribute='score')|sum / results|length) if results else 0 }}</span>
+                    Средний балл:
+                    <span class="stats-value">
+                        {% if results|length > 0 %}
+                            {{ "%.1f"|format(total_score / results|length) }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </span>
                 </div>
             </div>
 
@@ -274,14 +286,14 @@
                 <tbody>
                     {% for result in results %}
                         <tr style="animation-delay: {{ loop.index0 * 0.1 }}s">
-                            <td>{{ result.username }}</td>
+                            <td>{{ result.login }}</td>
                             <td class="score-cell
-                                {% if result.score >= 80 %}score-excellent
-                                {% elif result.score >= 60 %}score-good
-                                {% elif result.score >= 40 %}score-average
+                                {% if result.correct_answers >= 80 %}score-excellent
+                                {% elif result.correct_answers >= 60 %}score-good
+                                {% elif result.correct_answers >= 40 %}score-average
                                 {% else %}score-poor
                                 {% endif %}">
-                                {{ result.score }}%
+                                {{ result.correct_answers }}%
                             </td>
                         </tr>
                     {% endfor %}
@@ -299,7 +311,6 @@
     </div>
 
     <script>
-
         document.addEventListener('DOMContentLoaded', function() {
             const tableRows = document.querySelectorAll('.results-table tbody tr');
             tableRows.forEach((row, index) => {

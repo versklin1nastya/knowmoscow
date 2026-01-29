@@ -408,46 +408,45 @@ def assign_test(group_id):
 @app.route('/group/<int:group_id>/results')
 def view_test_results(group_id):
     if 'user_id' not in session:
-        return redirect(url_for('enter'))
+        return redirect(url_for('login'))
 
-    user_id = session['user_id']
-    conn = None
-    results = None
+    conn = get_db_connection()
+    cursor = conn.cursor()
 
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT owner_id FROM groups WHERE id = ?", (group_id,))
-        group = cursor.fetchone()
+    cursor.execute("SELECT owner_id FROM groups WHERE id = ?", (group_id,))
+    group = cursor.fetchone()
 
-        if not group:
-            abort(404, description=f"Группа с ID {group_id} не найдена.")
+    if not group or group['owner_id'] != session['user_id']:
+        conn.close()
+        return "У вас нет прав на просмотр результатов тестов в этой группе."
 
-        if group['owner_id'] != user_id:
-            abort(403, description="У вас нет прав на просмотр результатов тестов в этой группе.")
-        results_query = """
-        SELECT 
-            u.login, 
-            tr.correct_answers 
-        FROM results tr
-        JOIN users u ON tr.user_id = u.id
-        WHERE tr.group_id = ?
-        ORDER BY tr.correct_answers DESC
-        """
-        cursor.execute(results_query, (group_id,))
-        results = cursor.fetchall()
-    except Exception as e:
-        print(f"Database error: {e}")
-        abort(500, description="Ошибка при получении результатов из базы данных.")
+    cursor.execute("""
+        SELECT u.login, r.correct_answers, r.test_id
+        FROM results r
+        JOIN users u ON r.user_login = u.login
+        JOIN user_groups ug ON u.id = ug.user_id
+        WHERE ug.group_id = ?
+    """, (group_id,))
+    results = cursor.fetchall()
 
-    finally:
-        if conn:
-            conn.close()
-    return render_template(
-        'test_results.html',
-        group_id=group_id,
-        results=results
-    )
+    conn.close()
+
+    results_with_titles = []
+    for result in results:
+        test_id = result['test_id']
+        if test_id in tests:
+            test_title = tests[test_id]["title"]
+        else:
+            test_title = "Неизвестный тест"
+
+        result_dict = {
+            "login": result['login'],
+            "correct_answers": result['correct_answers'],
+            "test_title": test_title
+        }
+        results_with_titles.append(result_dict)
+
+    return render_template('test_results.html', group_id=group_id, results=results_with_titles)
 
 
 @app.route('/group/<int:group_id>')
